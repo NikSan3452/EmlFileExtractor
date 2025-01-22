@@ -1,10 +1,287 @@
-﻿<Window x:Class="EmlExtractor.Views.MainWindow"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:prism="http://prismlibrary.com/"
-        prism:ViewModelLocator.AutoWireViewModel="True"
-        Title="{Binding Title}" Height="350" Width="525" >
+﻿<Window
+    x:Class="EmlExtractor.Views.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:prism="http://prismlibrary.com/"
+    Title="{Binding Title}"
+    WindowStartupLocation="CenterScreen"
+    Width="600"
+    Height="350"
+    ResizeMode="NoResize"
+    prism:ViewModelLocator.AutoWireViewModel="True"
+    mc:Ignorable="d" d:DataContext="{d:DesignInstance }">
+    <Window.Resources>
+        <!--  Кнопки выбора директорий и файлов. Начало  -->
+        <Style x:Key="BrowseButtonStyle" TargetType="Button">
+            <Setter Property="Margin" Value="20,0" />
+            <Setter Property="HorizontalAlignment" Value="Right" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Width" Value="45" />
+            <Setter Property="Height" Value="45" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Border x:Name="border" Background="{TemplateBinding Background}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="BorderThickness" Value="1"/>
+                                <Setter TargetName="border" Property="BorderBrush" Value="LightBlue"/>
+                                <Setter TargetName="border" Property="CornerRadius" Value="5"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <!--  Кнопки выбора директорий и файлов. Конец  -->
+
+        <!--  Лейблы кнопок. Начало  -->
+        <Style x:Key="LabelTextBlockStyle" TargetType="TextBlock">
+            <Setter Property="Margin" Value="20,0" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+            <Setter Property="FontSize" Value="14" />
+        </Style>
+        <!--  Лейблы кнопок. Конец  -->
+
+        <!--  Вывод выбранных директорий. Начало  -->
+        <Style x:Key="SelectedPathTextBlockStyle" TargetType="TextBlock">
+            <Setter Property="Margin" Value="20,0" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+            <Setter Property="FontSize" Value="10" />
+        </Style>
+        <!--  Вывод выбранных директорий. Конец  -->
+
+        <!--  Иконки кнопок выбора директорий. Начало  -->
+        <Style x:Key="BrowseButtonImage" TargetType="Image">
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="HorizontalAlignment" Value="Center" />
+            <Setter Property="Height" Value="40" />
+            <Setter Property="Width" Value="40" />
+        </Style>
+        <!--  Иконки кнопок выбора директорий. Конец  -->
+    </Window.Resources>
+
+    <!--  Основное окно. Начало  -->
     <Grid>
-        <ContentControl prism:RegionManager.RegionName="ContentRegion" />
+        <Grid.RowDefinitions>
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+
+        <!--  Область выбора директории с электронными письмами. Начало  -->
+        <Grid Grid.Row="0">
+            <Grid.RowDefinitions>
+                <RowDefinition />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <TextBlock
+                Grid.Row="0"
+                Grid.Column="0"
+                Style="{StaticResource LabelTextBlockStyle}"
+                Text="Выберите файл с электронной почтой ('.eml', '.rar', '.zip', '.tgz')" />
+            <Button
+                Grid.Row="0"
+                Grid.Column="1"
+                Command="{Binding SelectEmailFolderCommand}"
+                Style="{StaticResource BrowseButtonStyle}">
+                <Image Source="/EmlExtractor;component/Icons/Folder-documents.png"
+                       Style="{StaticResource BrowseButtonImage}" />
+            </Button>
+            <TextBlock
+                Grid.Row="1"
+                Grid.Column="0"
+                Grid.ColumnSpan="2"
+                Style="{StaticResource SelectedPathTextBlockStyle}"
+                Text="{Binding EmailFilePath}" />
+        </Grid>
+        <!--  Область выбора директории с электронными письмами. Конец  -->
+
+        <!--  Область выбора директории, где будут храниться вложения. Начало  -->
+        <Grid Grid.Row="1">
+            <Grid.RowDefinitions>
+                <RowDefinition />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <TextBlock
+                Grid.Row="0"
+                Grid.Column="0"
+                Style="{StaticResource LabelTextBlockStyle}"
+                Text="Выберите папку, в которую  сохранить вложения" />
+            <Button
+                Grid.Row="0"
+                Grid.Column="1"
+                Command="{Binding SelectOutputFolderCommand}"
+                Style="{StaticResource BrowseButtonStyle}">
+                <Image Source="/EmlExtractor;component/Icons/Folder-download.png"
+                       Style="{StaticResource BrowseButtonImage}" />
+            </Button>
+            <TextBlock
+                Grid.Row="1"
+                Grid.Column="0"
+                Grid.ColumnSpan="2"
+                Style="{StaticResource SelectedPathTextBlockStyle}"
+                Text="{Binding OutputDirectory}" />
+        </Grid>
+        <!--  Область выбора директории, где будут храниться вложения. Конец  -->
+
+        <!--  Прогресс извлечения. Начало  -->
+        <Grid Grid.Row="2">
+            <Grid.RowDefinitions>
+                <RowDefinition />
+                <RowDefinition />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <TextBlock
+                Grid.Row="0"
+                Grid.Column="0"
+                Grid.ColumnSpan="2"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Text="{Binding ProgressInfo}"
+                TextWrapping="Wrap" />
+            <ProgressBar
+                Grid.Row="1"
+                Grid.Column="0"
+                VerticalAlignment="Center"
+                Height="15"
+                Margin="20,0"
+                Maximum="100"
+                Value="{Binding ProgressValue}">
+                <ProgressBar.Resources>
+                    <Style TargetType="{x:Type ProgressBar}">
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="{x:Type ProgressBar}">
+                                    <Grid x:Name="TemplateRoot" SnapsToDevicePixels="true">
+                                        <Border
+                                            x:Name="PART_Track"
+                                            Background="#E0E0E0"
+                                            CornerRadius="7.5"
+                                            BorderBrush="#BDBDBD"
+                                            BorderThickness="1">
+                                            <Border.Effect>
+                                                <DropShadowEffect
+                                                    BlurRadius="5"
+                                                    ShadowDepth="2"
+                                                    Opacity="0.5"
+                                                    Color="Gray" />
+                                            </Border.Effect>
+                                        </Border>
+                                        <Rectangle x:Name="PART_Indicator" HorizontalAlignment="Left"
+                                                   Fill="{TemplateBinding Foreground}" RadiusX="7.5" RadiusY="7.5" />
+                                    </Grid>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="Orientation" Value="Vertical">
+                                            <Setter Property="LayoutTransform" TargetName="TemplateRoot">
+                                                <Setter.Value>
+                                                    <RotateTransform Angle="-90" />
+                                                </Setter.Value>
+                                            </Setter>
+                                        </Trigger>
+                                        <Trigger Property="IsIndeterminate" Value="true">
+                                            <Setter Property="Opacity" TargetName="PART_Indicator" Value="0.5" />
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                        <Setter Property="Foreground" Value="#87CEFA" />
+                    </Style>
+                </ProgressBar.Resources>
+            </ProgressBar>
+
+            <TextBlock
+                Grid.Row="1"
+                Grid.Column="1"
+                Margin="0,0,20,0"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Text="{Binding ProgressValue, StringFormat={}{0}%}" />
+
+            <StackPanel
+                Grid.Row="2"
+                Grid.Column="0"
+                Grid.ColumnSpan="2"
+                HorizontalAlignment="Center"
+                Orientation="Horizontal">
+                <TextBlock Margin="20,0" Text="{Binding ExecutionTime, StringFormat='Затрачено времени: {0}'}" />
+            </StackPanel>
+        </Grid>
+        <!--  Прогресс извлечения. Конец  -->
+
+        <!--  Кнопка "Старт". Начало  -->
+        <Button
+            Grid.Row="3"
+            Grid.Column="0"
+            Width="100"
+            Height="40"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center"
+            Command="{Binding CurrentCommand}"
+            Cursor="Hand"
+            Background="#2196f3"
+            Foreground="White"
+            FontSize="22">
+            <Button.Template>
+                <ControlTemplate TargetType="Button">
+                    <Border
+                        x:Name="border"
+                        Background="{TemplateBinding Background}"
+                        BorderThickness="0"
+                        CornerRadius="10">
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="border" Property="Background" Value="#40a8f7" />
+                            <Setter TargetName="border" Property="Effect">
+                                <Setter.Value>
+                                    <DropShadowEffect
+                                        ShadowDepth="4"
+                                        Direction="330"
+                                        Color="Black"
+                                        Opacity="0.5"
+                                        BlurRadius="8" />
+                                </Setter.Value>
+                            </Setter>
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="border" Property="Background" Value="#2196f3" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Button.Template>
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="{Binding ButtonContent}"
+                           VerticalAlignment="Center"
+                           HorizontalAlignment="Center"
+                           Margin="0,0,0,3" />
+            </StackPanel>
+        </Button>
+        <!--  Кнопка "Старт". Конец  -->
     </Grid>
+    <!--  Основное окно. Конец  -->
 </Window>
